@@ -1,0 +1,24 @@
+<html>
+    <body>
+        <input type="text" id="in" />
+        <span id="out"></span>
+        <script>
+            var conn = new WebSocket("ws://192.168.0.36:8080");
+            conn.onopen = function(e) {
+                console.log("Connection establised!");
+            };
+
+            conn.onmessage = function(e) {
+                document.getElementById("out").innerText += e.data
+            }
+
+            document.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    toSend = document.getElementById('in').value;
+                    conn.send(toSend);
+                }
+            })
+        </script>
+
+    </body>
+</html>
