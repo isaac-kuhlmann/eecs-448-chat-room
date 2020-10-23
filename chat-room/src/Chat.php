@@ -20,7 +20,7 @@
 
         public function onMessage(ConnectionInterface $from, $msg) {
             $numOtherUsers = count($this->users) - 1;
-            echo sprintf('Connection %d sending message "%s" to %d other connestions%s' . "\n", $from->resourceId, $msg, $numOtherUsers, $numOtherUsers == 1 ? '' : 's');
+            echo sprintf('Connection %d sending message "%s" to %d other connections%s' . "\n", $from->resourceId, $msg, $numOtherUsers, $numOtherUsers > 1 ? '' : 's');
 
             foreach ($this->users as $user) {
                 if ($from !== $user) {
