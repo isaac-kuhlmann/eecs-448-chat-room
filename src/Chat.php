@@ -8,6 +8,7 @@
 
         public function __construct() {
             $this->users = new \SplObjectStorage;
+            echo "Constructing Chat\n";
 
         }
 
