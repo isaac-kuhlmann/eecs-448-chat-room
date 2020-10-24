@@ -36,3 +36,43 @@
     transform: rotate(360deg);
   }
 }
+
+#chatLog {
+  background-color: #61dafb;
+  border: 1px solid black;
+}
+
+#chatBox {
+  background-color: #61dafb;
+  border: 1px solid black;
+  height: 90vh;
+}
+
+#messageBox {
+  height: 10vh;
+  width: 50%;
+  font-size: 1.5rem;
+}
+
+.chatContainer {
+  display: flex;
+  flex-direction: row;
+  background-color: gray;
+}
+
+.nameContainer {
+  width: 18%;
+  border: 1px solid black;
+  text-decoration: underline;
+  margin-right: 2%;
+}
+
+.messageStranger {
+  color: blue;
+  text-align: left;
+}
+
+.messageUser {
+  color: red;
+  text-align: right;
+}
