@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import ChatBar from './ChatBar'
 import fire from "./fire"
-import { Chat } from "./Chat"
+// import { Chat } from "./Chat"
 
 const ChatLog = ({ user, connection }) => {
     const [currentLog, setLog] = useState([])
@@ -29,8 +29,8 @@ const ChatLog = ({ user, connection }) => {
 
     return (
         <div id="chatLog">
-            <div id="chatBox">
-                {currentLog.map(({ name, chat }) => <Chat name={name} chat={chat} />)}
+            <div>
+                {/* {currentLog.map(({ name, chat }) => <Chat name={name} chat={chat} />)} */}
             </div>
             <ChatBar updateChat={updateChat} />
         </div>

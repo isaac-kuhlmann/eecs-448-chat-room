@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-const ChatBar = ({ updateChat }) => {
+const ChatBar = (props) => {
     const [chatInput, setInput] = useState("");
 
     const input = <input
@@ -9,7 +9,7 @@ const ChatBar = ({ updateChat }) => {
         onChange={e => setInput(e.target.value)}
         onKeyDown={(e) => {
             if (e.key === "Enter") {
-                updateChat(chatInput)
+                props.updateChat(chatInput)
                 setInput("")
             }
         }}
