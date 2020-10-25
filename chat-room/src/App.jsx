@@ -2,6 +2,8 @@ import { useState } from 'react';
 import './App.css'
 import ChatLog from './ChatLog'
 
+import Dashboard from './Dashboard';
+
 const App = (props) => {
   const [user, setUser] = useState({ name: "defacto" });
 
@@ -18,6 +20,7 @@ const App = (props) => {
         //<input value={user.name} onChange={updateUser}></input>
       }
       <ChatLog user={user} connection={props.conn} />
+      <Dashboard />
     </div>
   );
 }
