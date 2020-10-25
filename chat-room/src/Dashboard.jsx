@@ -60,8 +60,9 @@ const Dashboard = (props) => {
         (() => {
             oldChats.on("value", function(snapshot) {
                 let newLog = [...currentLog];
-                Object.entries(snapshot.val()).forEach(([name, chat]) => {
-                    newLog.push({ name: name, chat: chat});
+                Object.entries(snapshot.val()).forEach((chatObj) => {
+                    console.log(chatObj);
+                    newLog.push({ name: chatObj[1].user.name, chat: chatObj[1].content});
                 });
                 setLog(newLog);
             })
