@@ -54,21 +54,25 @@ const Dashboard = (props) => {
 
     const [currentLog, setLog] = useState([])
 
-  
+
 
     useEffect(() => {
-        setInterval(() => {
-            const oldChats = fire.database().ref("Chatroom");
-            oldChats.on("value", function(snapshot) {
-                let newLog = [...currentLog];
-                    Object.entries(snapshot.val()).forEach((chatObj) => {
-                        console.log(chatObj);
-                        newLog.push({ name: chatObj[1].user.name, chat: chatObj[1].content});
-                    });
+            setInterval(
+                () => {
+                    const oldChats = fire.database().ref("Chatroom");
+                    oldChats.on("value", function(snapshot) {
+                        let newLog = [...currentLog];
+                        if(snapshot.val()){
+                            Object.entries(snapshot.val()).forEach((key) => {
+                                newLog.push({ name: key[1].user.name, chat: key[1].content});
+                            });
+                        }
+                        setLog(newLog);
+                    })
+                },
+                100
+            )
 
-                setLog(newLog);
-            }
-        )},1000)
     }, []);
 
 
@@ -92,7 +96,7 @@ const Dashboard = (props) => {
     }
 
     props.connection.onmessage = function (e) {
-        setLog([...currentLog, { name: "Stranger", chat: e.data }])
+        console.log(e.data)
     }
 
 
