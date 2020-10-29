@@ -3,14 +3,9 @@ import ReactDOM from 'react-dom';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 
-let conn = new WebSocket("ws://localhost:8080");
-conn.onopen = function(e) {
-    console.log("Connection establised!");
-};
-
 ReactDOM.render(
   <React.StrictMode>
-    <App conn={conn}/>
+    <App />
   </React.StrictMode>,
   document.getElementById('root')
 );

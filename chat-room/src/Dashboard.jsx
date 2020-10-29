@@ -54,31 +54,8 @@ const Dashboard = (props) => {
 
     const [currentLog, setLog] = useState([])
 
-
-
-    useEffect(() => {
-            setInterval(
-                () => {
-                    const oldChats = fire.database().ref("Chatroom");
-                    oldChats.on("value", function(snapshot) {
-                        let newLog = [...currentLog];
-                        if(snapshot.val()){
-                            Object.entries(snapshot.val()).forEach((key) => {
-                                newLog.push({ name: key[1].user.name, chat: key[1].content});
-                            });
-                        }
-                        setLog(newLog);
-                    })
-                },
-                100
-            )
-
-    }, []);
-
-
     const updateChat = (chat) => {
         console.log(chat);
-        props.connection.send(chat);
         let newChat = fire.database().ref("Chats").push({
             user: props.user,
             content: chat
@@ -89,16 +66,11 @@ const Dashboard = (props) => {
             guid: newChat.key
         })
         setLog([...currentLog, { name: props.user.name, chat: chat }]);
-        let chatRoom = fire.database().ref("Chatroom").push({
+        fire.database().ref("Chatroom").push({
             user: props.user,
             content: chat
         });
     }
-
-    props.connection.onmessage = function (e) {
-        console.log(e.data)
-    }
-
 
     return (
         <div>
@@ -124,7 +96,7 @@ const Dashboard = (props) => {
                     </div>
                     <div className={classes.chatWindow}>
                             {
-                                currentLog.map(({name, chat}, index) => (
+                                props.chats.map(({name, chat}, index) => (
                                     <div className={classes.flex} key={index}>
                                         <Chip label={name} className={classes.msg} />
                                         <Typography variant='h6'>
