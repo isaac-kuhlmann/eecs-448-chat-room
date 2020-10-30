@@ -52,21 +52,9 @@ const Dashboard = (props) => {
 
     const [textValue, changeTextValue] = useState('')
 
-    const [currentLog, setLog] = useState([])
-
     const updateChat = (chat) => {
         console.log(chat);
-        let newChat = fire.database().ref("Chats").push({
-            user: props.user,
-            content: chat
-        });
-        let users = fire.database().ref("Users");
-        users.child(props.user.name).update({
-            user: props.user,
-            guid: newChat.key
-        })
-        setLog([...currentLog, { name: props.user.name, chat: chat }]);
-        fire.database().ref("Chatroom").push({
+        fire.database().ref(props.currentChannel).push({
             user: props.user,
             content: chat
         });
@@ -85,8 +73,21 @@ const Dashboard = (props) => {
                     <div className={classes.topicsWindow}>
                         <List>
                             {
-                                ['Chat channel'].map(topic => (
-                                    <ListItem key= {topic} button>
+                                [...props.channels, "ADD CHANNEL"].map(topic => (
+                                    <ListItem key= {topic} button onClick={() => 
+                                    {
+                                        if (topic === "ADD CHANNEL") {
+                                            console.log("Adding Channel");
+                                            return;
+                                        }
+                                        props.setUser({ name: props.user.name, lastChannel: topic });
+                                        let users = fire.database().ref("Users");
+                                        users.child(props.user.name).update({
+                                            name: props.user.name,
+                                            lastChannel: topic
+                                        });
+                                        props.setCurrentChannel(topic);
+                                    }}>
                                         <ListItemText primary={topic} />
                                     </ListItem>
                                 ))

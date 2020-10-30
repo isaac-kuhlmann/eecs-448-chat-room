@@ -4,19 +4,21 @@ import Login from './Login'
 import fire from './fire'
 import Dashboard from './Dashboard';
 
-const App = (props) => {
+const App = () => {
   const [user, setUser] = useState({ name: "defacto" });
   const [loggedIn, setLoggedIn] = useState(false);
   const [chats, setChats] = useState([]);
+  const [channels, setChannels] = useState(["Chatroom", "Chatroom 2"]);
+  const [currentChannel, setCurrentChannel] = useState("Chatroom");
 
   const handleLogin = (username) => {
     setUser({ name: username });
     setLoggedIn(true);
   }
 
+  // Update chats based upon currentChannel
   useEffect(() => {
-    console.log("USING EFFECT");
-    const oldChats = fire.database().ref("Chatroom");
+    const oldChats = fire.database().ref(currentChannel);
     oldChats.on("value", function(snapshot) {
       let oldChatLog = [];
       console.log(snapshot.val());
@@ -26,17 +28,24 @@ const App = (props) => {
               oldChatLog.push({ name: key[1].user.name, chat: key[1].content});
             });
         }
-        console.log("OLD", oldChatLog);
         setChats(oldChatLog);
     })
+  }, [currentChannel]);
 
-  }, []);
+  console.log("CC", currentChannel);
 
   return (
     <div className="App">
       {
         loggedIn ?
-        <Dashboard user={user} chats={chats} /> :
+        <Dashboard 
+          user={user} 
+          setUser={setUser} 
+          chats={chats} 
+          channels={channels} 
+          currentChannel={currentChannel}
+          setCurrentChannel={setCurrentChannel}
+        /> :
         <Login onLogin={handleLogin} />
       }
     </div>
