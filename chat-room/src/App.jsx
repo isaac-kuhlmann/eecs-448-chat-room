@@ -4,21 +4,59 @@ import Login from './Login'
 import fire from './fire'
 import Dashboard from './Dashboard';
 
+const DEFAULT_CHANNEL = "Chatroom";
+
 const App = () => {
-  const [user, setUser] = useState({ name: "defacto" });
+  const [user, setUser] = useState({ name: "defacto", lastChannel: DEFAULT_CHANNEL });
   const [loggedIn, setLoggedIn] = useState(false);
   const [chats, setChats] = useState([]);
-  const [channels, setChannels] = useState(["Chatroom", "Chatroom 2"]);
-  const [currentChannel, setCurrentChannel] = useState("Chatroom");
+  const [channels, setChannels] = useState([]);
+  const [currentChannel, setCurrentChannel] = useState(user.lastChannel);
 
   const handleLogin = (username) => {
-    setUser({ name: username });
+    try {
+      let users = fire.database().ref(`Users/${username}`);
+      users.once("value", (snap) => {
+        let currentUser = snap.val();
+        console.log("user", currentUser, currentUser.lastChannel);
+        if (channels.includes(currentUser.lastChannel)) {
+          setUser({ name: username, lastChannel: currentUser.lastChannel});
+          setCurrentChannel(currentUser.lastChannel);
+        } else {
+          throw(Error("Last Channel Missing From Database"));
+        }
+
+      });
+    } catch (e) {
+      console.error(e);
+      setUser({ name: username, lastChannel: DEFAULT_CHANNEL});
+      setCurrentChannel(DEFAULT_CHANNEL);
+    }
     setLoggedIn(true);
+  }
+
+  useEffect(() => {
+    retrieveChannels();
+  }, []);
+
+  const retrieveChannels = () => {
+    let chatrooms = fire.database().ref("Chatrooms");
+    chatrooms.on("value", function(snapshot) {
+      let currentRooms = [];
+      console.log("ChatRoom Snap: ", snapshot.val());
+      if (snapshot.val()) {
+        Object.entries(snapshot.val()).forEach((key) => {
+          // Push the Chatroom name/key
+          currentRooms.push(key[0]);
+        })
+      }
+      setChannels(currentRooms);
+    })
   }
 
   // Update chats based upon currentChannel
   useEffect(() => {
-    const oldChats = fire.database().ref(currentChannel);
+    const oldChats = fire.database().ref("Chatrooms/" + currentChannel);
     oldChats.on("value", function(snapshot) {
       let oldChatLog = [];
       console.log(snapshot.val());

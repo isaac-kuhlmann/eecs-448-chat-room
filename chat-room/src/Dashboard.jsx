@@ -54,7 +54,7 @@ const Dashboard = (props) => {
 
     const updateChat = (chat) => {
         console.log(chat);
-        fire.database().ref(props.currentChannel).push({
+        fire.database().ref("Chatrooms/" + props.currentChannel).push({
             user: props.user,
             content: chat
         });
@@ -64,7 +64,7 @@ const Dashboard = (props) => {
         <div>
             <Paper className={classes.root}>
                 <Typography variant="h4" component="h4">
-                    Chat web
+                    <b>{props.currentChannel}</b>
                 </Typography>
                 <Typography variant="h5" component ="h5">
                     Topic from channel
@@ -77,6 +77,11 @@ const Dashboard = (props) => {
                                     <ListItem key= {topic} button onClick={() => 
                                     {
                                         if (topic === "ADD CHANNEL") {
+                                            fire.database().ref("Chatrooms").child("New Room").push({
+                                                user: "|OPERATOR|",
+                                                content: "New Chatroom Created"
+                                            });
+                                            props.setCurrentChannel("New Room");
                                             console.log("Adding Channel");
                                             return;
                                         }
@@ -88,7 +93,14 @@ const Dashboard = (props) => {
                                         });
                                         props.setCurrentChannel(topic);
                                     }}>
-                                        <ListItemText primary={topic} />
+                                        {
+                                            topic === "ADD CHANNEL" 
+                                            ? <ListItemText primary={topic} style={{ 
+                                                color: "green",
+                                                fontWeight: "900",
+                                                textAlign: "center" }} />
+                                            : <ListItemText primary={topic} />
+                                        }
                                     </ListItem>
                                 ))
 
