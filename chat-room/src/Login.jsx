@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { Grid, Card, CardContent, CardActions, TextField, Typography, Button,} from '@material-ui/core'
-import fire from './fire'
 
 const Login = (props) => {
     const [userName, setUser] = useState('');
