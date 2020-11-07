@@ -13,7 +13,8 @@ const App = () => {
   const [channels, setChannels] = useState([]);
   const [currentChannel, setCurrentChannel] = useState();
 
-  const handleLogin = (username) => {
+  const handleLogin = (username, success) => {
+    if(success){
     let users = fire.database().ref(`Users/${username}`);
     users.once("value", (snap) => {
       let currentUser = snap.val();
@@ -21,8 +22,8 @@ const App = () => {
         console.log("New User Created");
         users.child(username).update({
           name: username,
-          lastChannel: DEFAULT_CHANNEL
         });
+          lastChannel: DEFAULT_CHANNEL
         setUser({ name: username, lastChannel: DEFAULT_CHANNEL });
         setCurrentChannel(DEFAULT_CHANNEL);
         return;
@@ -30,14 +31,18 @@ const App = () => {
       console.log("user", currentUser, currentUser.lastChannel);
       if (channels.includes(currentUser.lastChannel)) {
         setUser({ name: username, lastChannel: currentUser.lastChannel });
-        setCurrentChannel(currentUser.lastChannel);
       } else {
+        setCurrentChannel(currentUser.lastChannel);
         console.error("Last Channel Missing From Database");
         setUser({ name: username, lastChannel: DEFAULT_CHANNEL });
         setCurrentChannel(DEFAULT_CHANNEL);
       }
     });
     setLoggedIn(true);
+    }
+    else {
+      console.error("Login Failed")
+    }
   }
 
   useEffect(() => {

@@ -1,11 +1,67 @@
 import React, { useState } from 'react';
 import { Grid, Card, CardContent, CardActions, TextField, Typography, Button,} from '@material-ui/core'
+import fire from "./fire"
+
+const bcrypt = require('bcryptjs')
 
 const Login = (props) => {
     const [userName, setUser] = useState('');
+    const [password, setPassword] = useState('');
+    const [r_userName, setRUser] = useState('');
+    const [r_password, setRPassword] = useState('');
+    
+    const handleLogin = () => {
+        let success = false;
+        try{
+            let users = fire.database().ref(`Users/${userName}`)
+            users.once("value", async (snap) => {
+                let currentUser = snap.val();
+                console.log(currentUser, currentUser.password, password)
+                if(snap.val()) {
+                    try {
+                        await bcrypt.compare(password, currentUser.password).then((e) => {
+                            if(e) {
+                                props.onLogin(userName, true)
+                            }
+                            else {
+                                alert("Incorrect Password")
+                            }
+                        })
 
-    const handleSubmit = () => {
-        props.onLogin(userName)
+                    }
+                    catch (e) {
+                        console.error("Server error: " + e.message)
+                    }
+                }
+                else {
+                    alert("Unable to find username")
+                }
+            })
+        }
+        catch (e) {
+            console.error("Unable to login: "+ e.message)
+        }
+
+    }
+
+    const handleRegister = async () => {
+        if(r_userName != '') {
+            try {
+                const salt = await bcrypt.genSalt()
+                const hashedPass = await bcrypt.hash(r_password, salt)
+                
+                const users = fire.database().ref("Users")
+                users.child(r_userName).update({
+                    username: r_userName,
+                    password: hashedPass
+                })
+            } catch (e) {
+                console.error("Could not store user in database: " + e.message)
+            }
+        }
+        else{
+            alert("Cannot use blank username")
+        }
     }
 
     return (
@@ -21,13 +77,26 @@ const Login = (props) => {
                 <Card >
                     <CardContent>
                         <Typography color="textPrimary">
-                            Enter a handle to chat with
+                            Login with an existing Username
                         </Typography>
                     </CardContent>
                     <CardActions>
-                        <TextField value={userName} onChange={e => setUser(e.target.value)} variant="outlined" />
-                        <Button variant='contained' color='primary' onClick={handleSubmit}>
+                        <TextField placeholder="Username" onChange={e => setUser(e.target.value)} variant="outlined" />
+                        <TextField placeholder="Password" onChange={e => setPassword(e.target.value)} variant="outlined"/>
+                        <Button variant='contained' color='primary' onClick={handleLogin}>
                             Login
+                        </Button>
+                    </CardActions>
+                    <CardContent>
+                        <Typography color="textPrimary">
+                            Register with a new Username
+                        </Typography>
+                    </CardContent>
+                    <CardActions>
+                        <TextField placeholder="Username" onChange={e => setRUser(e.target.value)} variant="outlined" />
+                        <TextField placeholder="Password" onChange={e => setRPassword(e.target.value)} variant="outlined"/>
+                        <Button variant='contained' color='secondary' onClick={handleRegister}>
+                            Register
                         </Button>
                     </CardActions>
                 </Card>
