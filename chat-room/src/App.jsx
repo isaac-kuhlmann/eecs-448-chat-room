@@ -13,26 +13,32 @@ const App = () => {
   const [channels, setChannels] = useState([]);
   const [currentChannel, setCurrentChannel] = useState(user.lastChannel);
 
-  const handleLogin = (username) => {
-    try {
-      let users = fire.database().ref(`Users/${username}`);
-      users.once("value", (snap) => {
-        let currentUser = snap.val();
-        console.log("user", currentUser, currentUser.lastChannel);
-        if (channels.includes(currentUser.lastChannel)) {
-          setUser({ name: username, lastChannel: currentUser.lastChannel});
-          setCurrentChannel(currentUser.lastChannel);
-        } else {
-          throw(Error("Last Channel Missing From Database"));
-        }
-
-      });
-    } catch (e) {
-      console.error(e);
-      setUser({ name: username, lastChannel: DEFAULT_CHANNEL});
-      setCurrentChannel(DEFAULT_CHANNEL);
+  const handleLogin = (username, success) => {
+    if(success){
+      try {
+        let users = fire.database().ref(`Users/${username}`);
+        users.once("value", (snap) => {
+          let currentUser = snap.val();
+          console.log("user", currentUser, currentUser.lastChannel);
+          if (channels.includes(currentUser.lastChannel)) {
+            setUser({ name: username, lastChannel: currentUser.lastChannel});
+            setCurrentChannel(currentUser.lastChannel);
+          } else {
+            throw(Error("Last Channel Missing From Database"));
+          }
+  
+        });
+      } catch (e) {
+        console.error(e);
+        setUser({ name: username, lastChannel: DEFAULT_CHANNEL});
+        setCurrentChannel(DEFAULT_CHANNEL);
+      }
+      setLoggedIn(true);
     }
-    setLoggedIn(true);
+    else {
+      console.error("Login Failed")
+    }
+
   }
 
   useEffect(() => {
