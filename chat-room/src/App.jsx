@@ -22,8 +22,9 @@ const App = () => {
         console.log("New User Created");
         users.child(username).update({
           name: username,
-        });
           lastChannel: DEFAULT_CHANNEL
+        });
+
         setUser({ name: username, lastChannel: DEFAULT_CHANNEL });
         setCurrentChannel(DEFAULT_CHANNEL);
         return;
