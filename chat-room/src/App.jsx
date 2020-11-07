@@ -11,13 +11,23 @@ const App = () => {
   const [loggedIn, setLoggedIn] = useState(false);
   const [chats, setChats] = useState([]);
   const [channels, setChannels] = useState([]);
-  const [currentChannel, setCurrentChannel] = useState(user.lastChannel);
+  const [currentChannel, setCurrentChannel] = useState();
 
   const handleLogin = (username) => {
     try {
       let users = fire.database().ref(`Users/${username}`);
       users.once("value", (snap) => {
         let currentUser = snap.val();
+        if (!currentUser) {
+          console.log("New User Created");
+          users.child(username).update({
+            name: username,
+            lastChannel: DEFAULT_CHANNEL
+          });
+          setUser({ name: username, lastChannel: DEFAULT_CHANNEL});
+          setCurrentChannel(DEFAULT_CHANNEL);
+          return;
+        }
         console.log("user", currentUser, currentUser.lastChannel);
         if (channels.includes(currentUser.lastChannel)) {
           setUser({ name: username, lastChannel: currentUser.lastChannel});
