@@ -1,15 +1,31 @@
-import React, { useState } from 'react';
-import { Grid, Card, CardContent, CardActions, TextField, Typography, Button, } from '@material-ui/core'
+import React, { useState} from 'react';
+import { Grid, Card, CardContent, CardActions, TextField, Typography, Button, AppBar, Toolbar, makeStyles} from '@material-ui/core'
 import fire from "./fire"
 
 const bcrypt = require('bcryptjs')
+
+const useStyles = makeStyles((theme) => ({
+    root: {
+        margin: '10px',
+        padding: theme.spacing(0),
+    },
+    title: {
+        marginRight: theme.spacing(10),
+        flexGrow: 1,
+    },
+    container : {
+        flex : 1,
+        justifyContent: 'center',
+    }
+}));
 
 const Login = (props) => {
     const [userName, setUser] = useState('');
     const [password, setPassword] = useState('');
     const [r_userName, setRUser] = useState('');
     const [r_password, setRPassword] = useState('');
-    const [b_userName, setBUser] = useState('');
+    //const [b_userName, setBUser] = useState('');
+    const classes = useStyles();
 
     const handleLogin = () => {
         try {
@@ -74,7 +90,7 @@ const Login = (props) => {
         }
     }
 
-    const handleBlock = async() => {
+    /*const handleBlock = async() => {
         let buser = fire.database().ref(`BlockUsers/${b_userName}`)
         if(b_userName != ''){
             try{
@@ -107,9 +123,10 @@ const Login = (props) => {
                     }
                 }
             })
-    }
+    }*/
 
     return (
+        
         <Grid
             container
             spacing={0}
@@ -118,6 +135,16 @@ const Login = (props) => {
             justify="center"
             style={{ minHeight: '100vh' }}
         >
+            <div className={classes.root}>
+                <AppBar position="static">
+                    <Toolbar>
+                        <Typography variant="h6" className={classes.title}>
+                            Web Chat Room
+                        </Typography>
+                        <Button color="inherit">Login Page</Button>
+                    </Toolbar>
+                </AppBar>
+            </div>
             <Grid item xs={3}>
                 <Card >
                     <CardContent>
@@ -142,17 +169,6 @@ const Login = (props) => {
                         <TextField placeholder="Password" label="Password" type="password" onChange={e => setRPassword(e.target.value)} />
                         <Button variant='contained' color='secondary' onClick={handleRegister}>
                             Register
-                        </Button>
-                    </CardActions>
-                    <CardContent>
-                        <Typography color="textPrimary">
-                            Block the user
-                        </Typography>
-                    </CardContent>
-                    <CardActions>
-                        <TextField placeholder="Username" onChange={e => setBUser(e.target.value)} variant="outlined" />
-                        <Button variant='contained' onClick={handleBlock}>
-                            Block
                         </Button>
                     </CardActions>
                 </Card>

@@ -67,7 +67,7 @@ const Dashboard = (props) => {
                     <b>{props.currentChannel}</b>
                 </Typography>
                 <Typography variant="h5" component="h5">
-                    Topic from channel
+                    General
                 </Typography>
                 <div className={classes.flex}>
                     <div className={classes.topicsWindow}>
