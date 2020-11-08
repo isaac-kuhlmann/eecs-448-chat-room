@@ -11,7 +11,6 @@ const Login = (props) => {
     const [r_password, setRPassword] = useState('');
     
     const handleLogin = () => {
-        let success = false;
         try{
             let users = fire.database().ref(`Users/${userName}`)
             users.once("value", async (snap) => {
@@ -45,15 +44,24 @@ const Login = (props) => {
     }
 
     const handleRegister = async () => {
-        if(r_userName != '') {
+        if(r_userName !== '') {
             try {
                 const salt = await bcrypt.genSalt()
                 const hashedPass = await bcrypt.hash(r_password, salt)
                 
                 const users = fire.database().ref("Users")
-                users.child(r_userName).update({
-                    username: r_userName,
-                    password: hashedPass
+                let check = fire.database().ref(`Users/${r_userName}`)
+                check.once("value", (snap) => {
+                    if(snap.val()) {
+                        alert("Username already in use")
+                    }
+                    else {
+                        users.child(r_userName).update({
+                            username: r_userName,
+                            password: hashedPass
+                        })
+                        alert(r_userName + " created!\n\nYou can now login")
+                    }
                 })
             } catch (e) {
                 console.error("Could not store user in database: " + e.message)
