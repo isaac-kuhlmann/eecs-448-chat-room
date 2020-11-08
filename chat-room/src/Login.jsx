@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Grid, Card, CardContent, CardActions, TextField, Typography, Button,} from '@material-ui/core'
+import { Grid, Card, CardContent, CardActions, TextField, Typography, Button, } from '@material-ui/core'
 import fire from "./fire"
 
 const bcrypt = require('bcryptjs')
@@ -10,19 +10,18 @@ const Login = (props) => {
     const [r_userName, setRUser] = useState('');
     const [r_password, setRPassword] = useState('');
     const [b_userName, setBUser] = useState('');
-    
+
     const handleLogin = () => {
-        let success = false;
-        try{
+        try {
             let users = fire.database().ref(`Users/${userName}`)
             //let Busers = fire.database().ref(`BlockUsers/${b_userName}`)
             users.once("value", async (snap) => {
                 let currentUser = snap.val();
                 console.log(currentUser, currentUser.password, password)
-                if(snap.val()) {
+                if (snap.val()) {
                     try {
                         await bcrypt.compare(password, currentUser.password).then((e) => {
-                            if(e) {
+                            if (e) {
                                 props.onLogin(userName, true)
                             }
                             else {
@@ -40,35 +39,36 @@ const Login = (props) => {
             })
         }
         catch (e) {
-            console.error("Unable to login: "+ e.message)
+            console.error("Unable to login: " + e.message)
         }
 
     }
 
     const handleRegister = async () => {
-        if(r_userName != '') {
+        if (r_userName !== '') {
             try {
                 const salt = await bcrypt.genSalt()
                 const hashedPass = await bcrypt.hash(r_password, salt)
-                
+
                 const users = fire.database().ref("Users")
                 users.child(r_userName).update({
                     username: r_userName,
                     password: hashedPass
-                })
+                });
+                props.onLogin(userName, true);
             } catch (e) {
                 console.error("Could not store user in database: " + e.message)
             }
         }
-        else{
+        else {
             alert("Cannot use blank username")
         }
     }
-    
-    const handleBlock = async() => {
+
+    const handleBlock = async () => {
         let buser = fire.database().ref(`BlockUsers/${b_userName}`)
-        if(b_userName != ''){
-            try{
+        if (b_userName !== '') {
+            try {
                 const users = fire.database().ref("BlockUsers")
 
                 users.child(b_userName).update({
@@ -79,35 +79,35 @@ const Login = (props) => {
                 console.error("Could not store user in database: " + e.message)
             }
         }
-        else{
+        else {
             alert("Cannot use blank username")
         }
-        
-            buser.once("value", async (snap) => {
-                let currentUser = snap.val();
-                if(snap.val()) {
-                    try {
-                        await bcrypt.compare(b_userName, currentUser.b_userName).then((e) => {
-                            if(e) {
-                                alert("User has been blocked")
-                            }
-                        })
-                    }
-                    catch (e) {
-                        console.error("Could not store user in database: " + e.message)
-                    }
+
+        buser.once("value", async (snap) => {
+            let currentUser = snap.val();
+            if (snap.val()) {
+                try {
+                    await bcrypt.compare(b_userName, currentUser.b_userName).then((e) => {
+                        if (e) {
+                            alert("User has been blocked")
+                        }
+                    })
                 }
-            })
+                catch (e) {
+                    console.error("Could not store user in database: " + e.message)
+                }
+            }
+        })
     }
 
     return (
         <Grid
-        container
-        spacing={0}
-        direction="column"
-        alignItems="center"
-        justify="center"
-        style={{ minHeight: '100vh' }}
+            container
+            spacing={0}
+            direction="column"
+            alignItems="center"
+            justify="center"
+            style={{ minHeight: '100vh' }}
         >
             <Grid item xs={3}>
                 <Card >
@@ -118,7 +118,7 @@ const Login = (props) => {
                     </CardContent>
                     <CardActions>
                         <TextField placeholder="Username" onChange={e => setUser(e.target.value)} variant="outlined" />
-                        <TextField placeholder="Password" label="Password" type="password"  onChange={e => setPassword(e.target.value)}/>
+                        <TextField placeholder="Password" label="Password" type="password" onChange={e => setPassword(e.target.value)} />
                         <Button variant='contained' color='primary' onClick={handleLogin}>
                             Login
                         </Button>
@@ -130,7 +130,7 @@ const Login = (props) => {
                     </CardContent>
                     <CardActions>
                         <TextField placeholder="Username" onChange={e => setRUser(e.target.value)} variant="outlined" />
-                        <TextField placeholder="Password" label="Password" type="password" onChange={e => setRPassword(e.target.value)}/>
+                        <TextField placeholder="Password" label="Password" type="password" onChange={e => setRPassword(e.target.value)} />
                         <Button variant='contained' color='secondary' onClick={handleRegister}>
                             Register
                         </Button>
@@ -141,14 +141,14 @@ const Login = (props) => {
                         </Typography>
                     </CardContent>
                     <CardActions>
-                        <TextField placeholder="Username" onChange={e => setBUser(e.target.value)} variant="outlined"/>
-                        <Button variant = 'contained' onClick = {handleBlock}>
+                        <TextField placeholder="Username" onChange={e => setBUser(e.target.value)} variant="outlined" />
+                        <Button variant='contained' onClick={handleBlock}>
                             Block
                         </Button>
                     </CardActions>
                 </Card>
-            </Grid>   
-        </Grid>             
+            </Grid>
+        </Grid>
 
     )
 
