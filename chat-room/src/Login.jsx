@@ -9,11 +9,13 @@ const Login = (props) => {
     const [password, setPassword] = useState('');
     const [r_userName, setRUser] = useState('');
     const [r_password, setRPassword] = useState('');
+    const [b_userName, setBUser] = useState('');
     
     const handleLogin = () => {
         let success = false;
         try{
             let users = fire.database().ref(`Users/${userName}`)
+            //let Busers = fire.database().ref(`BlockUsers/${b_userName}`)
             users.once("value", async (snap) => {
                 let currentUser = snap.val();
                 console.log(currentUser, currentUser.password, password)
@@ -27,7 +29,6 @@ const Login = (props) => {
                                 alert("Incorrect Password")
                             }
                         })
-
                     }
                     catch (e) {
                         console.error("Server error: " + e.message)
@@ -63,6 +64,41 @@ const Login = (props) => {
             alert("Cannot use blank username")
         }
     }
+    
+    const handleBlock = async() => {
+        let buser = fire.database().ref(`BlockUsers/${b_userName}`)
+        if(b_userName != ''){
+            try{
+                const users = fire.database().ref("BlockUsers")
+
+                users.child(b_userName).update({
+                    username: b_userName
+
+                })
+            } catch (e) {
+                console.error("Could not store user in database: " + e.message)
+            }
+        }
+        else{
+            alert("Cannot use blank username")
+        }
+        
+            buser.once("value", async (snap) => {
+                let currentUser = snap.val();
+                if(snap.val()) {
+                    try {
+                        await bcrypt.compare(b_userName, currentUser.b_userName).then((e) => {
+                            if(e) {
+                                alert("User has been blocked")
+                            }
+                        })
+                    }
+                    catch (e) {
+                        console.error("Could not store user in database: " + e.message)
+                    }
+                }
+            })
+    }
 
     return (
         <Grid
@@ -82,7 +118,7 @@ const Login = (props) => {
                     </CardContent>
                     <CardActions>
                         <TextField placeholder="Username" onChange={e => setUser(e.target.value)} variant="outlined" />
-                        <TextField placeholder="Password" onChange={e => setPassword(e.target.value)} variant="outlined"/>
+                        <TextField placeholder="Password" label="Password" type="password"  onChange={e => setPassword(e.target.value)}/>
                         <Button variant='contained' color='primary' onClick={handleLogin}>
                             Login
                         </Button>
@@ -94,9 +130,20 @@ const Login = (props) => {
                     </CardContent>
                     <CardActions>
                         <TextField placeholder="Username" onChange={e => setRUser(e.target.value)} variant="outlined" />
-                        <TextField placeholder="Password" onChange={e => setRPassword(e.target.value)} variant="outlined"/>
+                        <TextField placeholder="Password" label="Password" type="password" onChange={e => setRPassword(e.target.value)}/>
                         <Button variant='contained' color='secondary' onClick={handleRegister}>
                             Register
+                        </Button>
+                    </CardActions>
+                    <CardContent>
+                        <Typography color="textPrimary">
+                            Block the user
+                        </Typography>
+                    </CardContent>
+                    <CardActions>
+                        <TextField placeholder="Username" onChange={e => setBUser(e.target.value)} variant="outlined"/>
+                        <Button variant = 'contained' onClick = {handleBlock}>
+                            Block
                         </Button>
                     </CardActions>
                 </Card>
