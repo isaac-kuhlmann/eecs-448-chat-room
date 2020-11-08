@@ -13,36 +13,37 @@ const App = () => {
   const [channels, setChannels] = useState([]);
   const [currentChannel, setCurrentChannel] = useState();
 
-  const handleLogin = (username) => {
-    try {
-      let users = fire.database().ref(`Users/${username}`);
-      users.once("value", (snap) => {
-        let currentUser = snap.val();
-        if (!currentUser) {
-          console.log("New User Created");
-          users.child(username).update({
-            name: username,
-            lastChannel: DEFAULT_CHANNEL
-          });
-          setUser({ name: username, lastChannel: DEFAULT_CHANNEL});
-          setCurrentChannel(DEFAULT_CHANNEL);
-          return;
-        }
-        console.log("user", currentUser, currentUser.lastChannel);
-        if (channels.includes(currentUser.lastChannel)) {
-          setUser({ name: username, lastChannel: currentUser.lastChannel});
-          setCurrentChannel(currentUser.lastChannel);
-        } else {
-          throw(Error("Last Channel Missing From Database"));
-        }
+  const handleLogin = (username, success) => {
+    if(success){
+    let users = fire.database().ref(`Users/${username}`);
+    users.once("value", (snap) => {
+      let currentUser = snap.val();
+      if (!currentUser) {
+        console.log("New User Created");
+        users.child(username).update({
+          name: username,
+          lastChannel: DEFAULT_CHANNEL
+        });
 
-      });
-    } catch (e) {
-      console.error(e);
-      setUser({ name: username, lastChannel: DEFAULT_CHANNEL});
-      setCurrentChannel(DEFAULT_CHANNEL);
-    }
+        setUser({ name: username, lastChannel: DEFAULT_CHANNEL });
+        setCurrentChannel(DEFAULT_CHANNEL);
+        return;
+      }
+      console.log("user", currentUser, currentUser.lastChannel);
+      if (channels.includes(currentUser.lastChannel)) {
+        setUser({ name: username, lastChannel: currentUser.lastChannel });
+      } else {
+        setCurrentChannel(currentUser.lastChannel);
+        console.error("Last Channel Missing From Database");
+        setUser({ name: username, lastChannel: DEFAULT_CHANNEL });
+        setCurrentChannel(DEFAULT_CHANNEL);
+      }
+    });
     setLoggedIn(true);
+    }
+    else {
+      console.error("Login Failed")
+    }
   }
 
   useEffect(() => {
@@ -51,7 +52,7 @@ const App = () => {
 
   const retrieveChannels = () => {
     let chatrooms = fire.database().ref("Chatrooms");
-    chatrooms.on("value", function(snapshot) {
+    chatrooms.on("value", function (snapshot) {
       let currentRooms = [];
       console.log("ChatRoom Snap: ", snapshot.val());
       if (snapshot.val()) {
@@ -67,16 +68,16 @@ const App = () => {
   // Update chats based upon currentChannel
   useEffect(() => {
     const oldChats = fire.database().ref("Chatrooms/" + currentChannel);
-    oldChats.on("value", function(snapshot) {
+    oldChats.on("value", function (snapshot) {
       let oldChatLog = [];
       console.log(snapshot.val());
-        if(snapshot.val()){
-            Object.entries(snapshot.val()).forEach((key) => {
-              console.log(key);
-              oldChatLog.push({ name: key[1].user.name, chat: key[1].content});
-            });
-        }
-        setChats(oldChatLog);
+      if (snapshot.val()) {
+        Object.entries(snapshot.val()).forEach((key) => {
+          console.log(key);
+          oldChatLog.push({ name: key[1].user.name, chat: key[1].content });
+        });
+      }
+      setChats(oldChatLog);
     })
   }, [currentChannel]);
 
@@ -86,15 +87,15 @@ const App = () => {
     <div className="App">
       {
         loggedIn ?
-        <Dashboard 
-          user={user} 
-          setUser={setUser} 
-          chats={chats} 
-          channels={channels} 
-          currentChannel={currentChannel}
-          setCurrentChannel={setCurrentChannel}
-        /> :
-        <Login onLogin={handleLogin} />
+          <Dashboard
+            user={user}
+            setUser={setUser}
+            chats={chats}
+            channels={channels}
+            currentChannel={currentChannel}
+            setCurrentChannel={setCurrentChannel}
+          /> :
+          <Login onLogin={handleLogin} />
       }
     </div>
   );

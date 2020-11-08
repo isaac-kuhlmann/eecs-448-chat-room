@@ -1,4 +1,4 @@
-import React, {useState } from 'react';
+import React, { useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
@@ -12,10 +12,10 @@ import fire from './fire'
 
 const useStyles = makeStyles((theme) => ({
     root: {
-        margin :'50px',
-      padding: theme.spacing(4.2),
-      border: '1px solid grey',
-      height: '650px'
+        margin: '50px',
+        padding: theme.spacing(4.2),
+        border: '1px solid grey',
+        height: '650px'
     },
 
     flex: {
@@ -44,7 +44,7 @@ const useStyles = makeStyles((theme) => ({
     sendingButtom: {
         width: '20%',
     },
-  }));
+}));
 
 const Dashboard = (props) => {
 
@@ -66,16 +66,15 @@ const Dashboard = (props) => {
                 <Typography variant="h4" component="h4">
                     <b>{props.currentChannel}</b>
                 </Typography>
-                <Typography variant="h5" component ="h5">
-                    Topic from channel
+                <Typography variant="h5" component="h5">
+                    General
                 </Typography>
                 <div className={classes.flex}>
                     <div className={classes.topicsWindow}>
                         <List>
                             {
                                 [...props.channels, "ADD CHANNEL"].map(topic => (
-                                    <ListItem key= {topic} button onClick={() => 
-                                    {
+                                    <ListItem key={topic} button onClick={() => {
                                         if (topic === "ADD CHANNEL") {
 
                                             var channelNameInput = prompt("Please enter the channel name: ", "");
@@ -115,12 +114,13 @@ const Dashboard = (props) => {
                                         props.setCurrentChannel(topic);
                                     }}>
                                         {
-                                            topic === "ADD CHANNEL" 
-                                            ? <ListItemText primary={topic} style={{ 
-                                                color: "green",
-                                                fontWeight: "900",
-                                                textAlign: "center" }} />
-                                            : <ListItemText primary={topic} />
+                                            topic === "ADD CHANNEL"
+                                                ? <ListItemText primary={topic} style={{
+                                                    color: "green",
+                                                    fontWeight: "900",
+                                                    textAlign: "center"
+                                                }} />
+                                                : <ListItemText primary={topic} />
                                         }
                                     </ListItem>
                                 ))
@@ -129,37 +129,42 @@ const Dashboard = (props) => {
                         </List>
                     </div>
                     <div className={classes.chatWindow}>
-                            {
-                                props.chats.map(({name, chat}, index) => (
-                                    <div className={classes.flex} key={index}>
+                        {
+                            props.chats.map(({ name, chat }, index) => {
+                                if (name === "|OPERATOR|") {
+                                    console.log("Bruh");
+                                }
+                                return (
+                                    < div className={classes.flex} key={index} >
                                         <Chip label={name} className={classes.msg} />
                                         <Typography variant='h6'>
                                             {chat}
                                         </Typography>
                                     </div>
-                                ))
-                            }
+                                )
+                            })
+                        }
                     </div>
                 </div>
                 <div className={classes.flex}>
-                <TextField
-                    label="Send a chat"
-                    className={classes.chatBox}
-                    value={textValue}
-                    onChange={element => changeTextValue(element.target.value)}
-                />
-                <Button 
-                onClick={() => {
-                    updateChat(textValue);
-                    changeTextValue("");
-                }}
-                variant="contained" 
-                color="primary">
-                    Send
+                    <TextField
+                        label="Send a chat"
+                        className={classes.chatBox}
+                        value={textValue}
+                        onChange={element => changeTextValue(element.target.value)}
+                    />
+                    <Button
+                        onClick={() => {
+                            updateChat(textValue);
+                            changeTextValue("");
+                        }}
+                        variant="contained"
+                        color="primary">
+                        Send
                 </Button>
                 </div>
             </Paper>
-        </div>
+        </div >
     )
 }
 
