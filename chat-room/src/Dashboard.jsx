@@ -77,13 +77,34 @@ const Dashboard = (props) => {
                                     <ListItem key= {topic} button onClick={() => 
                                     {
                                         if (topic === "ADD CHANNEL") {
-                                            fire.database().ref("Chatrooms").child("New Room").push({
-                                                user: "|OPERATOR|",
-                                                content: "New Chatroom Created"
+
+                                            var channelNameInput = prompt("Please enter the channel name: ", "");
+
+                                            if(channelNameInput === null) //Checks if prompt is cancelled
+                                            {
+                                                return;
+                                            }
+                                            else if(channelNameInput === "") { //Checks if input is nothing
+                                                fire.database().ref("Chatrooms").child("New Room").push({
+                                                    user: "|OPERATOR|",
                                             });
                                             props.setCurrentChannel("New Room");
                                             console.log("Adding Channel");
                                             return;
+                                            }
+                                            else {  //Checks everything else
+                                                fire.database().ref("Chatrooms").child(channelNameInput).push({ 
+                                                    user: "|OPERATOR|",
+                                                    content: channelNameInput + " created"
+                                                
+                                                });
+                                                props.setCurrentChannel(channelNameInput);
+                                                console.log("Adding Channel");
+                                                return;
+                                            }
+
+
+
                                         }
                                         props.setUser({ name: props.user.name, lastChannel: topic });
                                         let users = fire.database().ref("Users");
@@ -143,3 +164,4 @@ const Dashboard = (props) => {
 }
 
 export default Dashboard;
+
