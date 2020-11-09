@@ -1,5 +1,5 @@
-import React, { useState} from 'react';
-import { Grid, Card, CardContent, CardActions, TextField, Typography, Button, AppBar, Toolbar, makeStyles} from '@material-ui/core'
+import React, { useState } from 'react';
+import { Grid, Card, CardContent, CardActions, TextField, Typography, Button, AppBar, Toolbar, makeStyles } from '@material-ui/core'
 import fire from "./fire"
 
 const bcrypt = require('bcryptjs')
@@ -13,8 +13,8 @@ const useStyles = makeStyles((theme) => ({
         marginRight: theme.spacing(10),
         flexGrow: 1,
     },
-    container : {
-        flex : 1,
+    container: {
+        flex: 1,
         justifyContent: 'center',
     }
 }));
@@ -24,13 +24,11 @@ const Login = (props) => {
     const [password, setPassword] = useState('');
     const [r_userName, setRUser] = useState('');
     const [r_password, setRPassword] = useState('');
-    //const [b_userName, setBUser] = useState('');
     const classes = useStyles();
 
     const handleLogin = () => {
         try {
             let users = fire.database().ref(`Users/${userName}`)
-            //let Busers = fire.database().ref(`BlockUsers/${b_userName}`)
             users.once("value", async (snap) => {
                 let currentUser = snap.val();
                 console.log(currentUser, currentUser.password, password)
@@ -69,7 +67,7 @@ const Login = (props) => {
                 const users = fire.database().ref("Users")
                 let check = fire.database().ref(`Users/${r_userName}`)
                 check.once("value", (snap) => {
-                    if(snap.val()) {
+                    if (snap.val()) {
                         alert("Username already in use")
                     }
                     else {
@@ -90,43 +88,8 @@ const Login = (props) => {
         }
     }
 
-    /*const handleBlock = async() => {
-        let buser = fire.database().ref(`BlockUsers/${b_userName}`)
-        if(b_userName != ''){
-            try{
-                const users = fire.database().ref("BlockUsers")
-
-                users.child(b_userName).update({
-                    username: b_userName
-
-                })
-            } catch (e) {
-                console.error("Could not store user in database: " + e.message)
-            }
-        }
-        else{
-            alert("Cannot use blank username")
-        }
-        
-            buser.once("value", async (snap) => {
-                let currentUser = snap.val();
-                if(snap.val()) {
-                    try {
-                        await bcrypt.compare(b_userName, currentUser.b_userName).then((e) => {
-                            if(e) {
-                                alert("User has been blocked")
-                            }
-                        })
-                    }
-                    catch (e) {
-                        console.error("Could not store user in database: " + e.message)
-                    }
-                }
-            })
-    }*/
-
     return (
-        
+
         <Grid
             container
             spacing={0}
