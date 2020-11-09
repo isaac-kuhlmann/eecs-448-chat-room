@@ -3,6 +3,8 @@ import ReactDOM from 'react-dom';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 
+// React boilerplate code from "npx create-react-app"
+
 ReactDOM.render(
   <React.StrictMode>
     <App />

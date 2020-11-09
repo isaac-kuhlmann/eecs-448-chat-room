@@ -8,8 +8,14 @@ import ListItemText from '@material-ui/core/ListItemText';
 import Chip from '@material-ui/core/Chip';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
-import fire from './fire'
+import fire from './fire';
 
+/*
+* Pre: Called in the Dashboard.jsx
+* Params: theme
+* Post: Chat room each component styling
+* Return: none
+*/
 const useStyles = makeStyles((theme) => ({
     root: {
         margin: '50px',
@@ -47,6 +53,12 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 
+/*
+* Pre: User is logged in and the Dashboard has been loaded
+* Params: the name of the new channel
+* Post: a new channel has been created on the database and is accessible on the homescreen
+* Return: boolean success
+*/
 export const createChannel = async (channelNameInput) => {
     if(channelNameInput === null) //Checks if prompt is cancelled
     {
@@ -71,6 +83,12 @@ export const createChannel = async (channelNameInput) => {
 }
 
 
+/*
+* Pre: User is logged in and the Dashboard has been loaded
+* Params: the user and the channel to update in the database and the chat to update with 
+* Post: the user and channel have been updated in the database
+* Return: a reference to the firebase json
+*/
 export const updateChat = (username, currentChannel, chat) => {
     console.log(chat);
     return fire.database().ref("Chatrooms/" + currentChannel).push({
@@ -80,6 +98,12 @@ export const updateChat = (username, currentChannel, chat) => {
 }
 
 
+/*
+* Pre: dom has been loaded 
+* Params: props = { user, setUser, chats, channels, currentChannel, setCurrentChannel } functions to modify parent state
+* Post: renders chats and channels on the screen with appropriate information aquired from other components
+* Return: the Dashboard react component
+*/
 const Dashboard = (props) => {
 
     const classes = useStyles();
@@ -101,6 +125,7 @@ const Dashboard = (props) => {
                     <div className={classes.topicsWindow}>
                         <List>
                             {
+                                // Mapping for the channels
                                 [...props.channels, "ADD CHANNEL"].map(topic => (
                                     <ListItem aria-label={"channel-"+topic} key={topic} button onClick={async () => {
                                         if (topic === "ADD CHANNEL") {
@@ -111,7 +136,6 @@ const Dashboard = (props) => {
                                             if(success){
                                                 props.setCurrentChannel(channelNameInput);
                                             }
-
                                         }
                                         props.setUser({ name: props.user.name, lastChannel: topic });
                                         let users = fire.database().ref("Users");
@@ -138,10 +162,8 @@ const Dashboard = (props) => {
                     </div>
                     <div className={classes.chatWindow}>
                         {
+                            // Mapping for the chats
                             props.chats.map(({ name, chat }, index) => {
-                                if (name === "|OPERATOR|") {
-                                    console.log("Bruh");
-                                }
                                 return (
                                     < div className={classes.flex} key={index} >
                                         <Chip label={name} className={classes.msg} />
