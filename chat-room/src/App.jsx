@@ -21,7 +21,6 @@ const App = () => {
       if (!currentUser) {
         console.log("New User Created");
         users.child(username).update({
-          name: username,
           lastChannel: DEFAULT_CHANNEL
         });
 
@@ -32,6 +31,7 @@ const App = () => {
       console.log("user", currentUser, currentUser.lastChannel);
       if (channels.includes(currentUser.lastChannel)) {
         setUser({ name: username, lastChannel: currentUser.lastChannel });
+        setCurrentChannel(currentUser.lastChannel);
       } else {
         setCurrentChannel(currentUser.lastChannel);
         console.error("Last Channel Missing From Database");

@@ -46,19 +46,47 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
+
+export const createChannel = async (channelNameInput) => {
+    if(channelNameInput === null) //Checks if prompt is cancelled
+    {
+        return false;
+    }
+    else if(channelNameInput === "") { //Checks if input is nothing
+        fire.database().ref("Chatrooms").child("New Room").push({
+            user: "|OPERATOR|",
+        });
+        console.log("Adding Channel");
+        return true;
+    }
+    else {  //Checks everything else
+        fire.database().ref("Chatrooms").child(channelNameInput).push({ 
+            user: "|OPERATOR|",
+            content: channelNameInput + " created"
+        
+        });
+        console.log("Adding Channel");
+        return true;
+    }
+}
+
+
+export const updateChat = (username, currentChannel, chat) => {
+    console.log(chat);
+    return fire.database().ref("Chatrooms/" + currentChannel).push({
+        user: username,
+        content: chat
+    });
+}
+
+
 const Dashboard = (props) => {
 
     const classes = useStyles();
 
     const [textValue, changeTextValue] = useState('')
 
-    const updateChat = (chat) => {
-        console.log(chat);
-        fire.database().ref("Chatrooms/" + props.currentChannel).push({
-            user: props.user,
-            content: chat
-        });
-    }
+
 
     return (
         <div>
@@ -74,35 +102,15 @@ const Dashboard = (props) => {
                         <List>
                             {
                                 [...props.channels, "ADD CHANNEL"].map(topic => (
-                                    <ListItem key={topic} button onClick={() => {
+                                    <ListItem aria-label={"channel-"+topic} key={topic} button onClick={async () => {
                                         if (topic === "ADD CHANNEL") {
 
                                             var channelNameInput = prompt("Please enter the channel name: ", "");
-
-                                            if(channelNameInput === null) //Checks if prompt is cancelled
-                                            {
-                                                return;
-                                            }
-                                            else if(channelNameInput === "") { //Checks if input is nothing
-                                                fire.database().ref("Chatrooms").child("New Room").push({
-                                                    user: "|OPERATOR|",
-                                            });
-                                            props.setCurrentChannel("New Room");
-                                            console.log("Adding Channel");
-                                            return;
-                                            }
-                                            else {  //Checks everything else
-                                                fire.database().ref("Chatrooms").child(channelNameInput).push({ 
-                                                    user: "|OPERATOR|",
-                                                    content: channelNameInput + " created"
-                                                
-                                                });
+                                            
+                                            let success = await createChannel(channelNameInput)
+                                            if(success){
                                                 props.setCurrentChannel(channelNameInput);
-                                                console.log("Adding Channel");
-                                                return;
                                             }
-
-
 
                                         }
                                         props.setUser({ name: props.user.name, lastChannel: topic });
@@ -155,7 +163,7 @@ const Dashboard = (props) => {
                     />
                     <Button
                         onClick={() => {
-                            updateChat(textValue);
+                            updateChat(props.user, props.currentChannel, textValue);
                             changeTextValue("");
                         }}
                         variant="contained"

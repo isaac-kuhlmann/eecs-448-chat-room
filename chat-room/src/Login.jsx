@@ -19,6 +19,32 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
+export const createUser = async (user, pass) => {
+    let arr = ['.', '#', '$', '[', ']']
+    arr.forEach((el, index)=>{
+        if(user.includes(el)) {
+            user = user.replace(el, index)
+        }
+    })
+    const users = fire.database().ref("Users")
+    let check = fire.database().ref(`Users/${user}`)
+    let success = false
+
+    const salt = await bcrypt.genSalt()
+    const hashedPass = await bcrypt.hash(pass, salt)
+
+    await check.once("value", (snap) => {
+        if(!snap.val()) {
+            users.child(user).update({
+                username: user,
+                password: hashedPass
+            })
+            success = true
+        }
+    })
+    return success
+}
+
 const Login = (props) => {
     const [userName, setUser] = useState('');
     const [password, setPassword] = useState('');
@@ -27,13 +53,15 @@ const Login = (props) => {
     //const [b_userName, setBUser] = useState('');
     const classes = useStyles();
 
+
+
     const handleLogin = () => {
         try {
             let users = fire.database().ref(`Users/${userName}`)
             //let Busers = fire.database().ref(`BlockUsers/${b_userName}`)
             users.once("value", async (snap) => {
                 let currentUser = snap.val();
-                console.log(currentUser, currentUser.password, password)
+                // console.log(currentUser, currentUser.password, password)
                 if (snap.val()) {
                     try {
                         await bcrypt.compare(password, currentUser.password).then((e) => {
@@ -63,24 +91,13 @@ const Login = (props) => {
     const handleRegister = async () => {
         if (r_userName !== '') {
             try {
-                const salt = await bcrypt.genSalt()
-                const hashedPass = await bcrypt.hash(r_password, salt)
+                if(await createUser(r_userName, r_password)){
+                    props.onLogin(r_userName, true)
+                }
+                else{
+                    alert("Username already in use")
+                }
 
-                const users = fire.database().ref("Users")
-                let check = fire.database().ref(`Users/${r_userName}`)
-                check.once("value", (snap) => {
-                    if(snap.val()) {
-                        alert("Username already in use")
-                    }
-                    else {
-                        users.child(r_userName).update({
-                            username: r_userName,
-                            password: hashedPass
-                        })
-                        props.onLogin(r_userName, true)
-                        alert(r_userName + " created!")
-                    }
-                })
             } catch (e) {
                 console.error("Could not store user in database: " + e.message)
             }
@@ -90,40 +107,7 @@ const Login = (props) => {
         }
     }
 
-    /*const handleBlock = async() => {
-        let buser = fire.database().ref(`BlockUsers/${b_userName}`)
-        if(b_userName != ''){
-            try{
-                const users = fire.database().ref("BlockUsers")
 
-                users.child(b_userName).update({
-                    username: b_userName
-
-                })
-            } catch (e) {
-                console.error("Could not store user in database: " + e.message)
-            }
-        }
-        else{
-            alert("Cannot use blank username")
-        }
-        
-            buser.once("value", async (snap) => {
-                let currentUser = snap.val();
-                if(snap.val()) {
-                    try {
-                        await bcrypt.compare(b_userName, currentUser.b_userName).then((e) => {
-                            if(e) {
-                                alert("User has been blocked")
-                            }
-                        })
-                    }
-                    catch (e) {
-                        console.error("Could not store user in database: " + e.message)
-                    }
-                }
-            })
-    }*/
 
     return (
         
