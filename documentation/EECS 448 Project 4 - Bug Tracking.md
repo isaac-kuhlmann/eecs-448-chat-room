@@ -25,3 +25,11 @@ List of bugs found by the team
   - **Date Fixed**: 11/07/2020
   - **Fixed by**: Will Thomas
   - **Fix Description**: This bug was fixed by changing how new users are registered within the database, the creation of a default chatroom "Chatroom" for all people to join into immediately fixed this problem by then having all new users have the lastChannel property set to the default chatroom.
+  
+  ## Too many Chats Fills Screen:
+  - **Date**: 11/08/2020
+  - **Reported by**: Will Thomas
+  - **Description**: When too many chats are sent in a single chat room, the chat log will fill so full that it will move below the current list meant to hold all of the chats
+  - **Date Fixed**: NA
+  - **Fixed by**: NA
+  - **Fix Description**: NA
