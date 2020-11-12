@@ -60,7 +60,7 @@ it("Allows users with special character usernames", async () => {
 })
 
 it('Hashes Passwords', async () => {
-    createUser("PasswordTest", "Password")
+    await createUser("PasswordTest", "Password")
     let check = fire.database().ref("Users/PasswordTest")
     await check.once("value", (snap) => {
         expect(snap.val().password === "Password").toBe(false)
